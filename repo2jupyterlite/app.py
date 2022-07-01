@@ -60,12 +60,17 @@ def build(repo_dir, output_dir):
     """
     Build a JupyterLite distribution.
 
-    Builds it out of repo_dir, outputs contents to output_dir
+    Builds it out of repo_dir, outputs contents to output_dir.
+
+    jupyterlite_config.json is read from base of repo if it exists.
     """
     abs_output_path = os.path.abspath(output_dir)
-    subprocess.check_call([
-        'jupyter', 'lite', 'build', '.', '--output-dir', abs_output_path, '--contents', '.'
-    ], cwd=repo_dir)
+    cmd = [
+        'jupyter', 'lite', 'build', '.', '--output-dir', abs_output_path, '--contents', '.',
+    ]
+    if os.path.exists(os.path.join(abs_output_path, 'jupyterlite_config.json')):
+        cmd += ['--config', 'jupyterlite_config.json']
+    subprocess.check_call(cmd, cwd=repo_dir)
 
 def main():
     argparser = argparse.ArgumentParser()
