@@ -9,6 +9,7 @@ setup(
     install_requires=[
         "jupyterlite",
         "jupyterlab",
+        "jupyterlite-xeus-python",
         "jupyter-repo2docker"
     ],
     python_requires=">=3.6",
