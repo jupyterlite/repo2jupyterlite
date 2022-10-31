@@ -1,6 +1,7 @@
 from repo2docker import contentproviders
 import argparse
 import logging
+import shutil
 import sys
 import subprocess
 import os
@@ -94,7 +95,18 @@ def main():
         print(f"Output path ${args.output_dir} already exists, aborting...")
         sys.exit(1)
 
-    with tempfile.TemporaryDirectory() as checkout_dir:
+    if os.path.exists(args.url):
+        # Trying to build a local path, so no fetching is necessary
+        cleanup_after = False
+        checkout_dir = args.url
+    else:
+        cleanup_after = True
+        checkout_dir = tempfile.gettempdir()
         fetch(args.url, args.ref, checkout_dir)
+
+    try:
         build(checkout_dir, args.output_dir)
         print(f"Go to http://localhost:8000/{args.output_dir}")
+    finally:
+        if cleanup_after:
+            shutil.rmtree(checkout_dir)
