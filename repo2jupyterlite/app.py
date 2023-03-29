@@ -1,11 +1,12 @@
-from repo2docker import contentproviders
 import argparse
 import logging
-import shutil
 import sys
 import subprocess
 import os
-import tempfile
+from contextlib import nullcontext
+from tempfile import TemporaryDirectory
+
+from repo2docker import contentproviders
 
 # List of ContentProviders to use
 content_providers = [
@@ -97,16 +98,14 @@ def main():
 
     if os.path.exists(args.url):
         # Trying to build a local path, so no fetching is necessary
-        cleanup_after = False
         checkout_dir = args.url
+        # null context so we have something for `with`
+        temp_dir = nullcontext()
     else:
-        cleanup_after = True
-        checkout_dir = tempfile.gettempdir()
+        temp_dir = TemporaryDirectory()
+        checkout_dir = temp_dir.name
         fetch(args.url, args.ref, checkout_dir)
 
-    try:
+    with temp_dir:
         build(checkout_dir, args.output_dir)
         print(f"Go to http://localhost:8000/{args.output_dir}")
-    finally:
-        if cleanup_after:
-            shutil.rmtree(checkout_dir)
