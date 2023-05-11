@@ -4,3 +4,8 @@ dependencies:
   - mamba
   - fastapi
   - uvicorn
+  - pip
+  - pip:
+      # pin this to something
+      - git+https://github.com/jupyterhub/binderhub@main
+    

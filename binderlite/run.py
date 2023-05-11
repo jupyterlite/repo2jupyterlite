@@ -2,7 +2,18 @@ import asyncio
 import os
 import uuid
 from pathlib import Path
+from escapism import escape
 
+from binderhub.repoproviders import (
+    DataverseProvider,
+    FigshareProvider,
+    GistRepoProvider,
+    GitHubRepoProvider,
+    GitLabRepoProvider,
+    GitRepoProvider,
+    HydroshareProvider,
+    ZenodoProvider,
+)
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -11,6 +22,17 @@ from fastapi.templating import Jinja2Templates
 HERE = Path(__file__).parent
 
 app = FastAPI()
+
+repo_providers = {
+    "gh": GitHubRepoProvider,
+    "gist": GistRepoProvider,
+    "git": GitRepoProvider,
+    "gl": GitLabRepoProvider,
+    "zenodo": ZenodoProvider,
+    "figshare": FigshareProvider,
+    "hydroshare": HydroshareProvider,
+    "dataverse": DataverseProvider,
+}
 
 templates = Jinja2Templates(directory=HERE / "templates")
 
@@ -29,20 +51,28 @@ async def index(request: Request):
 
 
 @app.get("/build")
-async def build(url: str, ref: str = None):
-    cmd = [
-        "repo2jupyterlite",
-        url,
-    ]
-    if ref:
+async def build(provider: str, spec: str):
+    provider_class = repo_providers[provider]
+    provider = provider_class(spec=spec)
+    repo = provider.get_repo_url()
+    ref = await provider.get_resolved_ref()
+
+    # try to form this output directory deterministically, so we rebuild only
+    # if necessary
+    output_dir = escape(f"{repo}-{ref}")
+    output_path = output_dir_prefix / output_dir
+
+    if not output_path.exists():
+        cmd = [
+            "repo2jupyterlite",
+            repo
+        ]
         cmd += ["--ref", ref]
 
-    output_dir = str(uuid.uuid4())
-    output_path = output_dir_prefix / output_dir
-    cmd += [str(output_path)]
+        cmd += [str(output_path)]
 
-    proc = await asyncio.create_subprocess_exec(*cmd)
-    retcode = await proc.wait()
-    if retcode != 0:
-        raise HTTPException(status_code=500, detail="jupyter lite build failed")
+        proc = await asyncio.create_subprocess_exec(*cmd)
+        retcode = await proc.wait()
+        if retcode != 0:
+            raise HTTPException(status_code=500, detail="jupyter lite build failed")
     return RedirectResponse(f"/render/{output_dir}/index.html")

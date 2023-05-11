@@ -31,18 +31,10 @@
         <img src="/static/wordmark.svg" width="640" />
       </div>
       <form id="build-form" class="form row" action="/build" method="GET">
+        <input class="hidden" type="hidden" name="provider" value="gh" />
         <div class="form-group col-sm-6">
-          <label>Repository URL</label>
-          <input class="form-control" type="text" name="url" />
-        </div>
-        <div class="form-group col-sm">
-          <label>Ref</label>
-          <input
-            class="form-control"
-            type="text"
-            name="ref"
-            placeholder="default"
-          />
+          <label>Repository Spec (github-org/repo-name/ref)</label>
+          <input class="form-control" type="text" name="spec" />
         </div>
         <div class="form-group col-sm d-flex align-items-end">
           <input
