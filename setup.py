@@ -7,8 +7,7 @@ setup(
     name="repo2jupyterlite",
     version="0.2",
     install_requires=[
-        "jupyterlite",
-        "jupyterlab",
+        "jupyterlite-core[all]",
         "jupyterlite-xeus-python",
         "jupyter-repo2docker",
     ],
