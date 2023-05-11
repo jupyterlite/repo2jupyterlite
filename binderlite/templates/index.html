@@ -31,7 +31,14 @@
         <img src="/static/wordmark.svg" width="640" />
       </div>
       <form id="build-form" class="form row" action="/build" method="GET">
-        <input class="hidden" type="hidden" name="provider" value="gh" />
+        <div class="form-group col-sm-4">
+          <label>Repository Spec (github-org/repo-name/ref)</label>
+          <select class="form-control" name="provider">
+            {% for key, rp in repo_providers.items() %}
+            <option value="{{ key }}">{{ rp.name.default() }}</option>
+            {% endfor %}
+          </select>
+        </div>
         <div class="form-group col-sm-6">
           <label>Repository Spec (github-org/repo-name/ref)</label>
           <input class="form-control" type="text" name="spec" />
@@ -42,7 +49,7 @@
             class="form-control btn-primary"
             style="display: inline-block"
             type="submit"
-            value="Build JupyterLite Distribution"
+            value="Launch"
           />
         </div>
       </form>

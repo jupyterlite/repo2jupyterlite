@@ -47,7 +47,7 @@ app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request, "repo_providers": repo_providers})
 
 
 @app.get("/build")
@@ -59,7 +59,7 @@ async def build(provider: str, spec: str):
 
     # try to form this output directory deterministically, so we rebuild only
     # if necessary
-    output_dir = escape(f"{repo}-{ref}")
+    output_dir = escape(f"{provider}-{repo}-{ref}")
     output_path = output_dir_prefix / output_dir
 
     if not output_path.exists():
