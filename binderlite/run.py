@@ -1,3 +1,4 @@
+import os
 import uuid
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
@@ -13,6 +14,10 @@ app = FastAPI()
 templates = Jinja2Templates(directory=HERE / "templates")
 
 output_dir_prefix = Path('output')
+# Create the output dir if it does not exist
+os.makedirs(output_dir_prefix, exist_ok=True)
+
+
 app.mount("/render", StaticFiles(directory=output_dir_prefix), name="render")
 app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
 
