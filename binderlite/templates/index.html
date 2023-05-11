@@ -2,46 +2,65 @@
 <html lang="en">
   <head>
     <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
     <script src="https://unpkg.com/htmx.org@1.7.0"></script>
 
     <title>JupyterLite for Repos</title>
     <style>
-        #build-form {
-            padding: 32px;
-        }
-        #logo {
-            margin: 32px;
-            margin-top: 64px;
-        }
+      #build-form {
+        padding: 32px;
+      }
+      #logo {
+        margin: 32px;
+        margin-top: 64px;
+      }
     </style>
   </head>
   <body>
     <div class="container">
-        <div class="text-center" id="logo">
-            <img src="/static/wordmark.svg" width="640" />
+      <div class="text-center" id="logo">
+        <img src="/static/wordmark.svg" width="640" />
+      </div>
+      <form id="build-form" class="form row" action="/build" method="GET">
+        <div class="form-group col-sm-6">
+          <label>Repository URL</label>
+          <input class="form-control" type="text" name="url" />
         </div>
-            <form id="build-form" class="form row" action="/build" method="GET">
-                <div class="form-group col-sm-6">
-                    <label>Repository URL</label>
-                    <input class="form-control" type="text" name="url" />
-                </div>
-                <div class="form-group col-sm">
-                    <label>Ref</label>
-                    <input class="form-control" type="text" name="ref" placeholder="default"/>
-                </div>
-                <div class="form-group col-sm d-flex align-items-end">
-                    <input id="submit" class="form-control btn-primary" style="display: inline-block;" type="submit" value="Build JupyterLite Distribution" />
-                </div>
-            </form>
+        <div class="form-group col-sm">
+          <label>Ref</label>
+          <input
+            class="form-control"
+            type="text"
+            name="ref"
+            placeholder="default"
+          />
+        </div>
+        <div class="form-group col-sm d-flex align-items-end">
+          <input
+            id="submit"
+            class="form-control btn-primary"
+            style="display: inline-block"
+            type="submit"
+            value="Build JupyterLite Distribution"
+          />
+        </div>
+      </form>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+      integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+      crossorigin="anonymous"
+    ></script>
 
-    <script src="/static/index.js" async>
-    </script>
+    <script src="/static/index.js" async></script>
   </body>
 </html>

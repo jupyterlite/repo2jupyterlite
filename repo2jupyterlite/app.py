@@ -1,8 +1,8 @@
 import argparse
 import logging
-import sys
-import subprocess
 import os
+import subprocess
+import sys
 from contextlib import nullcontext
 from tempfile import TemporaryDirectory
 
@@ -20,7 +20,7 @@ content_providers = [
     contentproviders.Git,
 ]
 
-logging.basicConfig(format='%(asctime)s %(msg)s', level=logging.DEBUG)
+logging.basicConfig(format="%(asctime)s %(msg)s", level=logging.DEBUG)
 log = logging
 
 
@@ -40,23 +40,20 @@ def fetch(url, ref, checkout_path):
         if spec is not None:
             picked_content_provider = cp
             log.info(
-                "Picked {cp} content "
-                "provider.\n".format(cp=cp.__class__.__name__)
+                "Picked {cp} content " "provider.\n".format(cp=cp.__class__.__name__)
             )
             break
 
     if picked_content_provider is None:
-        log.error(
-            "No matching content provider found for " "{url}.".format(url=url)
-        )
+        log.error("No matching content provider found for " "{url}.".format(url=url))
         # FIXME: How to handle this?
         return
-
 
     for log_line in picked_content_provider.fetch(
         spec, checkout_path, yield_output=True
     ):
         log.info(log_line, extra=dict(phase="fetching"))
+
 
 def build(repo_dir, output_dir):
     """
@@ -68,26 +65,28 @@ def build(repo_dir, output_dir):
     """
     abs_output_path = os.path.abspath(output_dir)
     cmd = [
-        'jupyter', 'lite', 'build', '.', '--output-dir', abs_output_path, '--contents', '.',
+        "jupyter",
+        "lite",
+        "build",
+        ".",
+        "--output-dir",
+        abs_output_path,
+        "--contents",
+        ".",
     ]
-    if os.path.exists(os.path.join(repo_dir, 'jupyterlite_config.json')):
-        cmd += ['--config', 'jupyterlite_config.json']
+    if os.path.exists(os.path.join(repo_dir, "jupyterlite_config.json")):
+        cmd += ["--config", "jupyterlite_config.json"]
     subprocess.check_call(cmd, cwd=repo_dir)
+
 
 def main():
     argparser = argparse.ArgumentParser()
+    argparser.add_argument("url", help="URL to repo to build")
     argparser.add_argument(
-        'url',
-        help="URL to repo to build"
+        "output_dir", help="Path to output built JupyterLite distribution to"
     )
     argparser.add_argument(
-        'output_dir',
-        help='Path to output built JupyterLite distribution to'
-    )
-    argparser.add_argument(
-        '--ref',
-        default=None,
-        help="Ref to check out of the repo to build"
+        "--ref", default=None, help="Ref to check out of the repo to build"
     )
 
     args = argparser.parse_args()

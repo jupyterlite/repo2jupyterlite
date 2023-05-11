@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 with open("README.md", encoding="utf8") as f:
     readme = f.read()
@@ -10,7 +10,7 @@ setup(
         "jupyterlite",
         "jupyterlab",
         "jupyterlite-xeus-python",
-        "jupyter-repo2docker"
+        "jupyter-repo2docker",
     ],
     python_requires=">=3.6",
     author="Yuvi Panda",
