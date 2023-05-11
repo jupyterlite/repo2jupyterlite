@@ -1,0 +1,8 @@
+channels:
+  - conda-forge
+dependencies:
+  - mamba
+  - pip
+  - pip:
+      - jupyterlite-xeus-python
+      - jupyterlite-core[all]
