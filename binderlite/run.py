@@ -1,8 +1,6 @@
 import asyncio
 import os
-import uuid
 from pathlib import Path
-from escapism import escape
 
 from binderhub.repoproviders import (
     DataverseProvider,
@@ -14,6 +12,7 @@ from binderhub.repoproviders import (
     HydroshareProvider,
     ZenodoProvider,
 )
+from escapism import escape
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -47,7 +46,9 @@ app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "repo_providers": repo_providers})
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "repo_providers": repo_providers}
+    )
 
 
 @app.get("/build")
@@ -63,10 +64,7 @@ async def build(provider: str, spec: str):
     output_path = output_dir_prefix / output_dir
 
     if not output_path.exists():
-        cmd = [
-            "repo2jupyterlite",
-            repo
-        ]
+        cmd = ["repo2jupyterlite", repo]
         cmd += ["--ref", ref]
 
         cmd += [str(output_path)]
