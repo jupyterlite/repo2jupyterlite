@@ -8,4 +8,3 @@ dependencies:
   - pip:
       # pin this to something
       - git+https://github.com/jupyterhub/binderhub@main
-    
