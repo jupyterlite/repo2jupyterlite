@@ -52,15 +52,15 @@ async def index(request: Request):
 
 
 @app.get("/build")
-async def build(provider: str, spec: str):
-    provider_class = repo_providers[provider]
+async def build(provider_name: str, spec: str):
+    provider_class = repo_providers[provider_name]
     provider = provider_class(spec=spec)
     repo = provider.get_repo_url()
     ref = await provider.get_resolved_ref()
 
     # try to form this output directory deterministically, so we rebuild only
     # if necessary
-    output_dir = escape(f"{provider}-{repo}-{ref}")
+    output_dir = escape(f"{provider_name}-{repo}-{ref}")
     output_path = output_dir_prefix / output_dir
 
     if not output_path.exists():
