@@ -14,9 +14,9 @@ setup(
     python_requires=">=3.6",
     author="Yuvi Panda",
     author_email="yuvipanda@gmail.com",
-    url="https://github.com/yuvipanda/repo2jupyterlite/",
+    url="https://github.com/jupyterlite/repo2jupyterlite/",
     project_urls={
-        "Source": "https://github.com/yuvipanda/repo2jupyterlite/",
+        "Source": "https://github.com/jupyterlite/repo2jupyterlite/",
         "Tracker": "https://github.com/jupyterhub/repo2docker/issues",
     },
     description="Build JupyterLite bundles from code repositories",
