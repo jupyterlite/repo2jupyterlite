@@ -4,6 +4,7 @@ dependencies:
   - mamba
   - fastapi
   - uvicorn
+  - nodejs
   - pip
   - pip:
       # pin this to something
