@@ -17,6 +17,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from .publish import LocalFilesystemPublisher
 
 HERE = Path(__file__).parent
 
@@ -40,8 +41,11 @@ output_dir_prefix = Path("output")
 os.makedirs(output_dir_prefix, exist_ok=True)
 
 
-app.mount("/render", StaticFiles(directory=output_dir_prefix), name="render")
 app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
+
+
+publisher = LocalFilesystemPublisher()
+publisher.mount_extra_handlers(app)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -60,17 +64,19 @@ async def build(provider_name: str, spec: str):
 
     # try to form this output directory deterministically, so we rebuild only
     # if necessary
-    output_dir = escape(f"{provider_name}-{repo}-{ref}")
-    output_path = output_dir_prefix / output_dir
+    slug = escape(f"{provider_name}-{repo}-{ref}")
 
-    if not output_path.exists():
+    if not (await publisher.exists(slug)):
         cmd = ["repo2jupyterlite", repo]
         cmd += ["--ref", ref]
 
-        cmd += [str(output_path)]
+        with publisher.get_target_dir(slug) as d:
+            cmd += [str(d)]
 
-        proc = await asyncio.create_subprocess_exec(*cmd)
-        retcode = await proc.wait()
-        if retcode != 0:
-            raise HTTPException(status_code=500, detail="jupyter lite build failed")
-    return RedirectResponse(f"/render/{output_dir}/index.html")
+            proc = await asyncio.create_subprocess_exec(*cmd)
+            retcode = await proc.wait()
+            if retcode != 0:
+                raise HTTPException(status_code=500, detail="jupyter lite build failed")
+
+            await publisher.upload(d, slug)
+    return RedirectResponse(await publisher.get_redirect_url(slug))
