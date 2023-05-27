@@ -97,6 +97,12 @@ class GitHubRepoProvider(LoggingConfigurable):
 
     @classmethod
     def from_spec_and_path(cls, spec_and_path: str):
+        """
+        Construct a cls with a spec + path string given.
+
+        Spec will be consumed and whatever is leftover will be considered a
+        path into the given repo.
+        """
         if len(spec_and_path.split("/")) == 3:
             # Path is not specified, set it to /
             parts = spec_and_path.split("/", 3)
@@ -111,7 +117,7 @@ class GitHubRepoProvider(LoggingConfigurable):
         self.repo = repo
         self.unresolved_ref = unresolved_ref
 
-    async def github_api_request(self, api_url, etag=None):
+    async def _github_api_request(self, api_url, etag=None):
         client = AsyncHTTPClient()
 
         request_kwargs = {}
@@ -216,7 +222,7 @@ class GitHubRepoProvider(LoggingConfigurable):
                 return None
             etag = None
 
-        resp = await self.github_api_request(api_url, etag=etag)
+        resp = await self._github_api_request(api_url, etag=etag)
         if resp is None:
             self.log.debug("Caching 404 on %s", api_url)
             self.cache_404.set(api_url, True)
@@ -248,8 +254,16 @@ class GitHubRepoProvider(LoggingConfigurable):
         return self.resolved_ref
 
     async def get_resolved_spec(self):
+        """
+        Return a fully resolved spec.
+
+        This can be used as the cache key
+        """
         resolved_ref = await self.get_resolved_ref()
         return f"{self.user}/{self.repo}/{resolved_ref}"
 
     def get_resolved_repo(self):
+        """
+        Return a fully resolved repo
+        """
         return f"https://{self.hostname}/{self.user}/{self.repo}"
