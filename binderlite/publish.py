@@ -4,6 +4,7 @@ import os
 import tempfile
 from contextlib import contextmanager
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 output_dir_prefix = Path("output")
 # Create the output dir if it does not exist
@@ -64,17 +65,29 @@ class LocalFilesystemPublisher(Publisher):
         # Instead of outputing to a temporary directory and then
         # copying, we have repo2jupyterlite output to the end directory
         # we are serving files from.
-        yield output_dir_prefix / slug
+        output_dir = output_dir_prefix / slug
+        if output_dir.exists():
+            shutil.rmtree(output_dir)
+        yield output_dir
 
     async def upload(self, source_dir, slug):
         # In get_target_dir
-        pass
+        # Put our completion sentinel here
+        with open(output_dir_prefix / slug / ".completed-sentinel", "w") as f:
+            f.write("")
 
     async def exists(self, slug):
-        return (output_dir_prefix / slug).exists()
+        return (output_dir_prefix / slug / ".completed-sentinel").exists()
 
     async def get_redirect_url(self, slug):
         return f"/render/{slug}/index.html"
+
+    async def serve_object(self, slug, path):
+        file_path = output_dir_prefix / slug / path
+        print("serving", file_path)
+        if file_path.is_dir():
+            file_path = file_path / "index.html"
+        return FileResponse(file_path)
 
     def mount_extra_handlers(self, app):
         app.mount("/render", StaticFiles(directory=output_dir_prefix), name="render")

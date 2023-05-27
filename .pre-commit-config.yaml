@@ -47,4 +47,4 @@ repos:
     rev: v0.0.262
     hooks:
       - id: ruff
-        args: ["--fix"]
+        args: ["--fix", "--line-length=120"]

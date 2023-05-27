@@ -33,7 +33,7 @@
       <form id="build-form" class="form row" action="/build" method="GET">
         <div class="form-group col-sm-4">
           <label>Repository Spec (github-org/repo-name/ref)</label>
-          <select class="form-control" name="provider_name">
+          <select class="form-control" name="provider_name" id="providerName">
             {% for key, rp in repo_providers.items() %}
             <option value="{{ key }}">{{ rp.name.default() }}</option>
             {% endfor %}
@@ -41,7 +41,7 @@
         </div>
         <div class="form-group col-sm-6">
           <label>Repository Spec (github-org/repo-name/ref)</label>
-          <input class="form-control" type="text" name="spec" />
+          <input class="form-control" type="text" name="spec" id="spec" />
         </div>
         <div class="form-group col-sm d-flex align-items-end">
           <input

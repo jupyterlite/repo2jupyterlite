@@ -2,19 +2,15 @@ import asyncio
 import os
 from pathlib import Path
 
-from binderhub.repoproviders import (
-    DataverseProvider,
-    FigshareProvider,
-    GistRepoProvider,
-    GitHubRepoProvider,
-    GitLabRepoProvider,
-    GitRepoProvider,
-    HydroshareProvider,
-    ZenodoProvider,
-)
+
+from repoproviders.github import GitHubRepoProvider
 from escapism import escape
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import (
+    Response,
+    HTMLResponse,
+    RedirectResponse,
+)
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from .publish import LocalFilesystemPublisher
@@ -25,13 +21,6 @@ app = FastAPI()
 
 repo_providers = {
     "gh": GitHubRepoProvider,
-    "gist": GistRepoProvider,
-    "git": GitRepoProvider,
-    "gl": GitLabRepoProvider,
-    "zenodo": ZenodoProvider,
-    "figshare": FigshareProvider,
-    "hydroshare": HydroshareProvider,
-    "dataverse": DataverseProvider,
 }
 
 templates = Jinja2Templates(directory=HERE / "templates")
@@ -55,28 +44,47 @@ async def index(request: Request):
     )
 
 
-@app.get("/build")
-async def build(provider_name: str, spec: str):
+@app.get("/v1/{provider_name:str}/{spec_and_path:path}")
+async def render(provider_name: str, spec_and_path: str, request: Request):
     provider_class = repo_providers[provider_name]
-    provider = provider_class(spec=spec)
-    repo = provider.get_repo_url()
+
+    provider, path = provider_class.from_spec_and_path(spec_and_path)
+    if path.strip() == "":
+        # If there's no path component, redirect until there is!
+        # This allows for easy copy pasting
+        return RedirectResponse(str(request.url).rstrip("/") + "/lab/index.html")
+
     ref = await provider.get_resolved_ref()
 
-    # try to form this output directory deterministically, so we rebuild only
-    # if necessary
-    slug = escape(f"{provider_name}-{repo}-{ref}")
+    if ref != provider.unresolved_ref:
+        # Ref was resolved! Let's redirect to resolved ref
+        return RedirectResponse(
+            f"/v1/{provider_name}/{await provider.get_resolved_spec()}/{path}"
+        )
+
+    resolved_spec = await provider.get_resolved_spec()
+
+    slug = escape(f"{provider_name}-{resolved_spec}")
 
     if not (await publisher.exists(slug)):
-        cmd = ["repo2jupyterlite", repo]
-        cmd += ["--ref", ref]
+        if path == "index.html" or path == "lab/index.html":
+            cmd = ["repo2jupyterlite", provider.get_resolved_repo()]
+            cmd += ["--ref", ref]
 
-        with publisher.get_target_dir(slug) as d:
-            cmd += [str(d)]
+            with publisher.get_target_dir(slug) as d:
+                cmd += [str(d)]
 
-            proc = await asyncio.create_subprocess_exec(*cmd)
-            retcode = await proc.wait()
-            if retcode != 0:
-                raise HTTPException(status_code=500, detail="jupyter lite build failed")
+                print(cmd)
+                proc = await asyncio.create_subprocess_exec(*cmd)
+                retcode = await proc.wait()
+                if retcode != 0:
+                    raise HTTPException(
+                        status_code=500, detail="jupyter lite build failed"
+                    )
 
-            await publisher.upload(d, slug)
-    return RedirectResponse(await publisher.get_redirect_url(slug))
+                await publisher.upload(d, slug)
+        else:
+            return Response(status_code=404)
+    # FIXME: This means we don't support etags, etc.
+    # But we can and should rely on downstream proxy to support those!
+    return await publisher.serve_object(slug, path)
