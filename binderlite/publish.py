@@ -59,6 +59,7 @@ class Publisher:
 
 
 class LocalFilesystemPublisher(Publisher):
+    @contextmanager
     def get_target_dir(self, slug):
         # Instead of outputing to a temporary directory and then
         # copying, we have repo2jupyterlite output to the end directory
