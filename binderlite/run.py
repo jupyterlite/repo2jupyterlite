@@ -1,6 +1,7 @@
 import asyncio
 import os
 from pathlib import Path
+import string
 
 
 from repoproviders.github import GitHubRepoProvider
@@ -64,7 +65,13 @@ async def render(provider_name: str, spec_and_path: str, request: Request):
 
     resolved_spec = await provider.get_resolved_spec()
 
-    slug = escape(f"{provider_name}-{resolved_spec}")
+    # Explicitly allow "-" and "/", so these output folders nest. Without
+    # this, you will end up with one huge folder with millions of outputs,
+    # which is a perf nightmare
+    slug = escape(
+        f"{provider_name}-{resolved_spec}",
+        safe=string.ascii_letters + string.digits + "-" + "/",
+    )
 
     if not (await publisher.exists(slug)):
         if path == "index.html" or path == "lab/index.html":
