@@ -3,8 +3,9 @@ import shutil
 import os
 import tempfile
 from contextlib import contextmanager
-from fastapi.staticfiles import StaticFiles
+from starlette.staticfiles import NotModifiedResponse, StaticFiles
 from fastapi.responses import FileResponse
+from email.utils import parsedate
 
 output_dir_prefix = Path("output")
 # Create the output dir if it does not exist
@@ -82,12 +83,45 @@ class LocalFilesystemPublisher(Publisher):
     async def get_redirect_url(self, slug):
         return f"/render/{slug}/index.html"
 
-    async def serve_object(self, slug, path):
+    def is_not_modified(self, response_headers, request_headers) -> bool:
+        """
+        Given the request and response headers, return `True` if an HTTP
+        "Not Modified" response could be returned instead.
+        """
+        try:
+            if_none_match = request_headers["if-none-match"]
+            etag = response_headers["etag"]
+            if if_none_match == etag:
+                return True
+        except KeyError:
+            pass
+
+        try:
+            if_modified_since = parsedate(request_headers["if-modified-since"])
+            last_modified = parsedate(response_headers["last-modified"])
+            if (
+                if_modified_since is not None
+                and last_modified is not None
+                and if_modified_since >= last_modified
+            ):
+                return True
+        except KeyError:
+            pass
+
+        return False
+
+    async def serve_object(self, slug, path, request_headers):
         file_path = output_dir_prefix / slug / path
         print("serving", file_path)
         if file_path.is_dir():
             file_path = file_path / "index.html"
-        return FileResponse(file_path)
+        # FIXME: Make this configurable, understand Cache-Control better
+        resp = FileResponse(
+            file_path, headers={"Cache-Control": "public, max-age=86400"}
+        )
+        if self.is_not_modified(resp.headers, request_headers):
+            return NotModifiedResponse(resp.headers)
+        return resp
 
     def mount_extra_handlers(self, app):
         app.mount("/render", StaticFiles(directory=output_dir_prefix), name="render")

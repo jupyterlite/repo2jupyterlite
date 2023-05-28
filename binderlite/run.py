@@ -74,7 +74,10 @@ async def render(provider_name: str, spec_and_path: str, request: Request):
     )
 
     if not (await publisher.exists(slug)):
-        if path == "index.html" or path == "lab/index.html":
+        # We only trigger builds for files ending with .html, to avoid triggering
+        # a ton of builds when we are recovering from partial cache evictions -
+        # each JS and CSS thing will trigger its own build!
+        if path.endswith(".html"):
             cmd = ["repo2jupyterlite", provider.get_resolved_repo()]
             cmd += ["--ref", ref]
 
@@ -94,4 +97,4 @@ async def render(provider_name: str, spec_and_path: str, request: Request):
             return Response(status_code=404)
     # FIXME: This means we don't support etags, etc.
     # But we can and should rely on downstream proxy to support those!
-    return await publisher.serve_object(slug, path)
+    return await publisher.serve_object(slug, path, request.headers)
