@@ -45,6 +45,65 @@ function ExplanatoryCards() {
         </div>
       </div>
 
+      <h3 className="text-center explanatory-card-header">
+        Current Limitations
+      </h3>
+      <h6 className="text-center">
+        Binderlite is based on{" "}
+        <a href="https://jupyterlite.readthedocs.io/en/latest/">JupyterLite</a>,
+        which is still alpha software. There are a lot of limitations, but also
+        quick progress!{" "}
+      </h6>
+      <div className="card border-light col-sm-4 text-center explanatory-card">
+        <div className="card-body">
+          <h4 className="card-title">Limited package support</h4>
+          <p className="card-text">
+            Only popular scientific python packages (<code>numpy</code>,{" "}
+            <code>scipy</code>,<code>pandas</code>, etc) and{" "}
+            <em>pure python packages</em> available on{" "}
+            <a href="https://conda-forge.org/">are installable</a>. If your
+            favorite package is not available on conda-forge, please consider{" "}
+            <a href="https://conda-forge.org/docs/maintainer/adding_pkgs.html">
+              contributing it
+            </a>{" "}
+            to conda-forge (for pure python packages) or to{" "}
+            <a href="https://github.com/emscripten-forge/recipes">
+              emscriptenforge
+            </a>{" "}
+            (for python packages with native dependencies). Using{" "}
+            <code>requirements.txt</code> or <code>pip</code> is not supported -
+            <code>environment.yml</code> is the <strong>only</strong> supported
+            config file.
+          </p>
+        </div>
+      </div>
+      <div className="card border-light col-sm-4 text-center explanatory-card">
+        <div className="card-body">
+          <h4 className="card-title">Limited language support</h4>
+          <p className="card-text">
+            <a href="https://mybinder.org">mybinder.org</a> supports a wide
+            variety of languages (Python, R, Julia, etc) and interfaces
+            (JupyterLab, RStudio, etc). Binderlite only supports Python
+            currently, and only JupyterLab (RetroLab / Notebook 7 support coming
+            soon)
+          </p>
+        </div>
+      </div>
+      <div className="card border-light col-sm-4 text-center explanatory-card">
+        <div className="card-body">
+          <h4 className="card-title">Limited networking support</h4>
+          <p className="card-text">
+            The browser environment is a fundamentally different one than what
+            Python runs in on a regular computer. In particular, networking is
+            far more constrained - only web requests can be made, and only via
+            an async interface. So popular libraries like <code>requests</code>
+            or <code>socket</code> will not work, and libraries that depend on
+            them will also work (for now). This might break a lot of your
+            favorite libraries!
+          </p>
+        </div>
+      </div>
+
       <div className="text-center m-5 p-5">
         <small style={{ color: "#999" }}>
           Provide feedback{" "}
