@@ -129,5 +129,6 @@ dmypy.json
 .pyre/
 
 binderlite/static/index.js*
+binderlite/templates/index.html
 
 output/

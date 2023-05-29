@@ -13,3 +13,12 @@
   display: inline;
   padding-right: 8px;
 }
+
+#build-form {
+  padding: 32px;
+}
+
+#logo {
+  margin: 32px;
+  margin-top: 64px;
+}
