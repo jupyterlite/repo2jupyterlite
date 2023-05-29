@@ -2,11 +2,11 @@
   margin-top: 8px;
   font-size: 12px;
   color: grey;
-  height: 36px;
 }
 
 .parsed-url-container ul {
   list-style: none;
+  padding-left: 0;
 }
 
 .parsed-url-container ul li {

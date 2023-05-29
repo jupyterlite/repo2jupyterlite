@@ -2,6 +2,7 @@ import asyncio
 import os
 from pathlib import Path
 import string
+from yarl import URL
 
 
 from repoproviders.github import GitHubRepoProvider
@@ -53,15 +54,25 @@ async def render(provider_name: str, spec_and_path: str, request: Request):
     if path.strip() == "":
         # If there's no path component, redirect until there is!
         # This allows for easy copy pasting
-        return RedirectResponse(str(request.url).rstrip("/") + "/lab/index.html")
+        url = URL(str(request.url))
+        # Save and restore query params, because YARL https://github.com/aio-libs/yarl/issues/111
+        existing_query = url.query
+        url = url.with_path(url.path.rstrip("/") + "/lab/index.html").with_query(
+            existing_query
+        )
+        return RedirectResponse(url)
 
     ref = await provider.get_resolved_ref()
 
     if ref != provider.unresolved_ref:
-        # Ref was resolved! Let's redirect to resolved ref
-        return RedirectResponse(
+        # Ref was resolved! Let's redirect to resolved ref, preserving query params
+        url = URL(str(request.url))
+        # Save and restore query params, because YARL https://github.com/aio-libs/yarl/issues/111
+        existing_query = url.query
+        url = url.with_path(
             f"/v1/{provider_name}/{await provider.get_resolved_spec()}/{path}"
-        )
+        ).with_query(existing_query)
+        return RedirectResponse(url)
 
     resolved_spec = await provider.get_resolved_spec()
 

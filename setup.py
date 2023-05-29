@@ -16,6 +16,7 @@ setup(
         "jupyterlite-core[all]",
         "jupyterlite-xeus-python",
         "jupyter-repo2docker",
+        "yarl",
     ],
     python_requires=">=3.10",
     author="Yuvi Panda",

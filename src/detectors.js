@@ -6,9 +6,11 @@ class ParsedRepoURL {
   provider;
   displayParts;
   spec;
+  filePath;
 
-  constructor(provider, spec, displayParts) {
+  constructor(provider, spec, filePath, displayParts) {
     this.displayParts = displayParts;
+    this.filePath = filePath;
     this.provider = provider;
     this.spec = spec;
   }
@@ -50,30 +52,35 @@ function github(url) {
   const pathParts = url.pathname
     .split("/")
     .filter((part) => part.trim() !== "");
-  if (pathParts.length === 2) {
-    // path is like <username>/<reponame>
-    // So reponame is present, ref is not
-    return new ParsedRepoURL("gh", `gh/${pathParts[0]}/${pathParts[1]}/HEAD`, {
-      source: url.hostname,
-      repository: `${pathParts[0]}/${pathParts[1]}`,
-      ref: "default branch",
-    });
-  } else if (pathParts.length >= 4) {
-    // path is like <username>/<reponame>/tree|blob|commit/<ref>/<path-to-file>
-    if (
-      pathParts[2] === "tree" ||
-      pathParts[2] === "commit" ||
-      pathParts[2] === "blob"
-    ) {
-      return new ParsedRepoURL(
-        "gh",
-        `gh/${pathParts[0]}/${pathParts[1]}/${pathParts[3]}`,
-        {
-          source: url.hostname,
-          repository: `${pathParts[0]}/${pathParts[1]}`,
-          ref: pathParts[3],
-        },
-      );
+  if (pathParts.length < 2) {
+    return null;
+  }
+  let parts = {
+    user: pathParts[0],
+    repo: pathParts[1],
+    ref: "HEAD",
+    filePath: "",
+  };
+
+  // Only check for ref if path is like <user>/<repo>/<kind>/<ref>
+  if (
+    pathParts.length > 3 &&
+    ["blob", "tree", "commit"].includes(pathParts[2])
+  ) {
+    parts["ref"] = pathParts[3];
+    if (pathParts.length > 4) {
+      parts["filePath"] = pathParts.slice(4).join("/");
     }
   }
+  return new ParsedRepoURL(
+    "gh",
+    `gh/${parts.user}/${parts.repo}/${parts.ref}`,
+    parts.filePath,
+    {
+      source: url.hostname,
+      repository: `${parts.user}/${parts.repo}`,
+      ref: parts.ref === "HEAD" ? "default branch" : parts.ref,
+      "path to open": parts.filePath,
+    },
+  );
 }

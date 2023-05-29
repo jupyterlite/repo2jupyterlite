@@ -9,7 +9,7 @@ import "./App.css";
 function App() {
   const [repoUrl, setRepoUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [detectedInfo, setDetectedInfo] = useState(null);
+  const [parsedRepoURL, setParsedRepoURL] = useState(null);
   return (
     <div className="container">
       <div className="text-center" id="logo">
@@ -17,22 +17,39 @@ function App() {
       </div>
       <form id="build-form" className="form">
         <div className="row">
-          <div className="form-group col-sm-10">
-            <label>Repository to Build</label>
+          <div className="form-group">
             <input
               className="form-control"
               type="text"
-              style={{ fontSize: "16px" }}
+              style={{ fontSize: "20px" }}
               name="spec"
               id="spec"
+              placeholder="Enter GitHub URL"
               value={repoUrl}
               onChange={(e) => {
                 const parsedRepo = parseRepoURL(e.target.value);
-                setDetectedInfo(parsedRepo);
+                setParsedRepoURL(parsedRepo);
                 console.log(parsedRepo);
                 setRepoUrl(e.target.value);
               }}
             />
+          </div>
+        </div>
+        <div className="row parsed-url-container">
+          <div className="col-sm-10">
+            <ul>
+              {parsedRepoURL &&
+                Object.keys(parsedRepoURL.displayParts).map((key) => {
+                  if (parsedRepoURL.displayParts[key]) {
+                    return (
+                      <li key={key}>
+                        <span>{key}</span>:{" "}
+                        <strong>{parsedRepoURL.displayParts[key]}</strong>
+                      </li>
+                    );
+                  }
+                })}
+            </ul>
           </div>
           <div className="form-group col-sm d-flex align-items-end">
             <input
@@ -41,9 +58,17 @@ function App() {
               type="button"
               style={{ fontSize: "16px" }}
               value={isSubmitting ? "Building..." : "Launch"}
-              disabled={!Boolean(detectedInfo)}
+              disabled={!Boolean(parsedRepoURL)}
               onClick={() => {
-                const redirectUrl = `/v1/${detectedInfo.spec}`;
+                let redirectUrl = new URL(
+                  `${window.location.protocol}//${window.location.host}/v1/${parsedRepoURL.spec}`,
+                );
+                if (parsedRepoURL.filePath) {
+                  redirectUrl.searchParams.append(
+                    "path",
+                    parsedRepoURL.filePath,
+                  );
+                }
                 setIsSubmitting(true);
 
                 window.location.href = redirectUrl;
@@ -51,19 +76,6 @@ function App() {
               }}
             />
           </div>
-        </div>
-        <div className="row parsed-url-container">
-          <ul className="">
-            {detectedInfo &&
-              Object.keys(detectedInfo.displayParts).map((key) => {
-                return (
-                  <li key={key} className="list-group-item">
-                    <span>{key}</span>:{" "}
-                    <strong>{detectedInfo.displayParts[key]}</strong>
-                  </li>
-                );
-              })}
-          </ul>
         </div>
       </form>
     </div>
