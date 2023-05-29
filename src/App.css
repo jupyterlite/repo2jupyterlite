@@ -1,0 +1,15 @@
+.parsed-url-container {
+  margin-top: 8px;
+  font-size: 12px;
+  color: grey;
+  height: 36px;
+}
+
+.parsed-url-container ul {
+  list-style: none;
+}
+
+.parsed-url-container ul li {
+  display: inline;
+  padding-right: 8px;
+}

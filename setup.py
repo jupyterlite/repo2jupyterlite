@@ -1,7 +1,13 @@
 from setuptools import find_packages, setup
+import subprocess
 
 with open("README.md", encoding="utf8") as f:
     readme = f.read()
+
+
+# FIXME: Better build process?!
+subprocess.check_call(["npm", "i"])
+subprocess.check_call(["npm", "run", "build"])
 
 setup(
     name="repo2jupyterlite",
@@ -11,7 +17,7 @@ setup(
         "jupyterlite-xeus-python",
         "jupyter-repo2docker",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.10",
     author="Yuvi Panda",
     author_email="yuvipanda@gmail.com",
     url="https://github.com/jupyterlite/repo2jupyterlite/",
