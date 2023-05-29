@@ -22,3 +22,11 @@
   margin: 32px;
   margin-top: 64px;
 }
+
+.explanatory-card .card-body {
+  padding: 36px;
+}
+
+.explanatory-card-header {
+  margin-top: 84px;
+}

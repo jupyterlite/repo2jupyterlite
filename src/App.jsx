@@ -6,6 +6,59 @@ import { parseRepoURL } from "./detectors";
 
 import "./App.css";
 
+function ExplanatoryCards() {
+  return (
+    <div className="row">
+      <h3 className="text-center explanatory-card-header">
+        Why use Binderlite?
+      </h3>
+      <div className="card border-light col-sm-4 text-center explanatory-card">
+        <div className="card-body">
+          <h4 className="card-title">Quick startup</h4>
+          <p className="card-text">
+            The language runtime is entirely in your browser, so loading is
+            quite fast. First time kernel startup takes a few seconds, but
+            should be faster on subsequent loads.
+          </p>
+        </div>
+      </div>
+      <div className="card border-light col-sm-4 text-center explanatory-card">
+        <div className="card-body">
+          <h4 className="card-title">Pre-install Python Packages</h4>
+          <p className="card-text">
+            Pre install popular scientific python packages, as well as most pure
+            python packages from{" "}
+            <a href="https://conda-forge.org/">conda-forge</a>, by adding an{" "}
+            <code>
+              <strong>environment.yml</strong>
+            </code>{" "}
+            file to your repository
+          </p>
+        </div>
+      </div>
+      <div className="card border-light col-sm-4 text-center explanatory-card">
+        <div className="card-body">
+          <h4 className="card-title">Shareable link</h4>
+          <p className="card-text">
+            Once your JupyterLite loads, you can simply share that link with
+            anyone else for them to have access to the same content!
+          </p>
+        </div>
+      </div>
+
+      <div className="text-center m-5 p-5">
+        <small style={{ color: "#999" }}>
+          Provide feedback{" "}
+          <a href="https://github.com/jupyterlite/repo2jupyterlite">
+            on GitHub
+          </a>
+          . Made with ❤️ by <a href="https://yuvi.in">Yuvi</a>
+        </small>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [repoUrl, setRepoUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,6 +72,7 @@ function App() {
         <div className="row">
           <div className="form-group">
             <input
+              autoFocus={true}
               className="form-control"
               type="text"
               style={{ fontSize: "20px" }}
@@ -78,6 +132,7 @@ function App() {
           </div>
         </div>
       </form>
+      <ExplanatoryCards />
     </div>
   );
 }
