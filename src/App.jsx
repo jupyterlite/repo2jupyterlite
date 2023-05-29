@@ -133,10 +133,8 @@ function App() {
               autoFocus={true}
               className="form-control"
               type="text"
-              style={{ fontSize: "20px" }}
-              name="spec"
-              id="spec"
-              placeholder="Enter GitHub URL"
+              id="repoURL"
+              placeholder="Enter GitHub URL..."
               value={repoUrl}
               onChange={(e) => {
                 const parsedRepo = parseRepoURL(e.target.value);

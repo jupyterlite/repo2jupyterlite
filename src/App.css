@@ -1,6 +1,10 @@
 a {
   text-decoration: none;
 }
+
+#repoURL {
+  font-size: 24px;
+}
 .parsed-url-container {
   margin-top: 8px;
   font-size: 12px;
