@@ -9,39 +9,38 @@ import "./App.css";
 function ExplanatoryCards() {
   return (
     <div className="row">
-      <h3 className="text-center explanatory-card-header">
-        Why use Binderlite?
-      </h3>
+      <h3 className="text-center explanatory-card-header">How it works</h3>
       <div className="card border-light col-sm-4 text-center explanatory-card">
         <div className="card-body">
-          <h4 className="card-title">Quick startup</h4>
+          <h4 className="card-title">1. Enter your repo information</h4>
           <p className="card-text">
-            The language runtime is entirely in your browser, so loading is
-            quite fast. First time kernel startup takes a few seconds, but
-            should be faster on subsequent loads.
+            Provide a URL to the GitHub repository you want to launch. You can
+            point to a specific branch or commit, along with a specific notebook
+            you want to launch!
           </p>
         </div>
       </div>
       <div className="card border-light col-sm-4 text-center explanatory-card">
         <div className="card-body">
-          <h4 className="card-title">Pre-install Python Packages</h4>
+          <h4 className="card-title">2. We pre-install Python Packages</h4>
           <p className="card-text">
-            Pre install popular scientific python packages, as well as most pure
-            python packages from{" "}
-            <a href="https://conda-forge.org/">conda-forge</a>, by adding an{" "}
+            We look for an{" "}
             <code>
               <strong>environment.yml</strong>
             </code>{" "}
-            file to your repository
+            file in your repository, and any packages found listed there are
+            installed. Your users can start using these packages immediately
+            once JupyterLite loads.
           </p>
         </div>
       </div>
       <div className="card border-light col-sm-4 text-center explanatory-card">
         <div className="card-body">
-          <h4 className="card-title">Shareable link</h4>
+          <h4 className="card-title">3. Interact with your repo!</h4>
           <p className="card-text">
-            Once your JupyterLite loads, you can simply share that link with
-            anyone else for them to have access to the same content!
+            You can open notebooks, execute code and test everything out! Simply
+            share that link with anyone else for them to have access to the same
+            content!
           </p>
         </div>
       </div>
