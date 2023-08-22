@@ -17,7 +17,7 @@ You can use the `repo2jupyterlite` command to check out any supported repo
 installation with `jupyter lite build`.
 
 ```bash
-repo2jupyterlite https://github.com/yuvipandas/environment.yml requirements-build
+repo2jupyterlite https://github.com/yuvipanda/environment.yml requirements-build
 ```
 
 You can serve the `requirements-build/` directory now statically, and it should
