@@ -14,7 +14,7 @@ setup(
     version="0.2",
     install_requires=[
         "jupyterlite-core[all]",
-        "jupyterlite-xeus-python",
+        "jupyterlite-xeus",
         "jupyter-repo2docker",
         "yarl",
     ],
