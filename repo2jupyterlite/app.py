@@ -40,12 +40,12 @@ def fetch(url, ref, checkout_path):
         if spec is not None:
             picked_content_provider = cp
             log.info(
-                "Picked {cp} content " "provider.\n".format(cp=cp.__class__.__name__)
+                f"Picked {cp.__class__.__name__} content " "provider.\n"
             )
             break
 
     if picked_content_provider is None:
-        log.error("No matching content provider found for " "{url}.".format(url=url))
+        log.error("No matching content provider found for " f"{url}.")
         # FIXME: How to handle this?
         return
 
