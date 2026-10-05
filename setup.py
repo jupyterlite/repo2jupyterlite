@@ -1,5 +1,6 @@
-from setuptools import find_packages, setup
 import subprocess
+
+from setuptools import find_packages, setup
 
 with open("README.md", encoding="utf8") as f:
     readme = f.read()

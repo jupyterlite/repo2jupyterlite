@@ -1,11 +1,12 @@
-from pathlib import Path
-import shutil
 import os
+import shutil
 import tempfile
 from contextlib import contextmanager
-from starlette.staticfiles import NotModifiedResponse, StaticFiles
-from fastapi.responses import FileResponse
 from email.utils import parsedate
+from pathlib import Path
+
+from fastapi.responses import FileResponse
+from starlette.staticfiles import NotModifiedResponse, StaticFiles
 
 output_dir_prefix = Path("output")
 # Create the output dir if it does not exist
@@ -57,7 +58,6 @@ class Publisher:
         """
         Mount extra FastAPI handlers in given app if needed.
         """
-        pass
 
 
 class LocalFilesystemPublisher(Publisher):
