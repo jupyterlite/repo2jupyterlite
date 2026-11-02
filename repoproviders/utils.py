@@ -1,5 +1,5 @@
-from collections import OrderedDict
 import time
+from collections import OrderedDict
 
 
 class Cache(OrderedDict):

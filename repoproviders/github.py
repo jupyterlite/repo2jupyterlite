@@ -1,10 +1,12 @@
-from tornado.httpclient import AsyncHTTPClient, HTTPError, HTTPRequest
 import json
-from traitlets.config import LoggingConfigurable
-import time
 import os
-from traitlets import Unicode, default
+import time
 from datetime import timedelta
+
+from tornado.httpclient import AsyncHTTPClient, HTTPError, HTTPRequest
+from traitlets import Unicode, default
+from traitlets.config import LoggingConfigurable
+
 from .utils import Cache
 
 
@@ -88,9 +90,7 @@ class GitHubRepoProvider(LoggingConfigurable):
             # If client_id is specified, assuming access_token is personal access token. Otherwise,
             # assume oauth basic token.
             if self.client_id:
-                return r"username={client_id}\npassword={token}".format(
-                    client_id=self.client_id, token=self.access_token
-                )
+                return rf"username={self.client_id}\npassword={self.access_token}"
             else:
                 return rf"username={self.access_token}\npassword=x-oauth-basic"
         return ""
@@ -152,10 +152,7 @@ class GitHubRepoProvider(LoggingConfigurable):
                 reset_timestamp = int(e.response.headers["x-ratelimit-reset"])
                 reset_seconds = int(reset_timestamp - time.time())
                 self.log.error(
-                    "GitHub Rate limit ({limit}) exceeded. Reset in {delta}.".format(
-                        limit=rate_limit,
-                        delta=timedelta(seconds=reset_seconds),
-                    )
+                    f"GitHub Rate limit ({rate_limit}) exceeded. Reset in {timedelta(seconds=reset_seconds)}."
                 )
                 # round expiry up to nearest 5 minutes
                 minutes_until_reset = 5 * (1 + (reset_seconds // 60 // 5))
@@ -191,11 +188,7 @@ class GitHubRepoProvider(LoggingConfigurable):
             # str(timedelta) looks like '00:32'
             delta = timedelta(seconds=int(reset_timestamp - time.time()))
             log(
-                "GitHub rate limit remaining {remaining}/{limit}. Reset in {delta}.".format(
-                    remaining=remaining,
-                    limit=rate_limit,
-                    delta=delta,
-                )
+                f"GitHub rate limit remaining {remaining}/{rate_limit}. Reset in {delta}."
             )
 
         return resp
@@ -204,12 +197,7 @@ class GitHubRepoProvider(LoggingConfigurable):
         if hasattr(self, "resolved_ref"):
             return self.resolved_ref
 
-        api_url = "{api_base_path}/repos/{user}/{repo}/commits/{ref}".format(
-            api_base_path=self.api_base_path.format(hostname=self.hostname),
-            user=self.user,
-            repo=self.repo,
-            ref=self.unresolved_ref,
-        )
+        api_url = f"{self.api_base_path.format(hostname=self.hostname)}/repos/{self.user}/{self.repo}/commits/{self.unresolved_ref}"
         self.log.debug("Fetching %s", api_url)
         cached = self.cache.get(api_url)
         if cached:
